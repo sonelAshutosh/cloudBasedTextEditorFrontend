@@ -1,15 +1,16 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-
-const TextEditor = dynamic(() => import('@/components/TextEditor'), {
-  ssr: false,
-})
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { v4 as uuidV4 } from 'uuid'
 
 export default function Home() {
-  return (
-    <div>
-      <TextEditor />
-    </div>
-  )
+  const router = useRouter()
+
+  useEffect(() => {
+    const randomId = uuidV4()
+    router.push(`/document/${randomId}`)
+  }, [])
+
+  return <div>Home</div>
 }
