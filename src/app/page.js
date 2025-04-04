@@ -1,16 +1,26 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { v4 as uuidV4 } from 'uuid'
+import { redirect } from 'next/navigation'
 
 export default function Home() {
-  const router = useRouter()
-
   useEffect(() => {
-    const randomId = uuidV4()
-    router.push(`/document/${randomId}`)
+    const accessToken = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('accessToken='))
+      ?.split('=')[1]
+
+    const userId = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('userId='))
+      ?.split('=')[1]
+
+    if (accessToken && userId) {
+      redirect('/home')
+    } else {
+      redirect('/login')
+    }
   }, [])
 
-  return <div>Home</div>
+  return null
 }

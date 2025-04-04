@@ -11,6 +11,10 @@
   justify-content: center;
 }
 
+.container {
+  width: 100%;
+}
+
 .container .ql-editor {
   width: 8.5in;
   height: 11in;
@@ -21,6 +25,7 @@
 }
 
 .container .ql-toolbar {
+  width: 100%;
   display: flex;
   justify-content: center;
   position: sticky;
