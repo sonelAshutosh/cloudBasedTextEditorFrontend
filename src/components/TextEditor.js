@@ -5,6 +5,7 @@ import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import io from 'socket.io-client'
 import { useParams } from 'next/navigation'
+import API from '@/axios'
 
 const SAVE_INTERVAL_MS = 2000
 const TOOLBAR_OPTIONS = [
@@ -22,16 +23,39 @@ const TOOLBAR_OPTIONS = [
 function TextEditor() {
   const [socket, setSocket] = useState()
   const [quill, setQuill] = useState()
+  const [title, setTitle] = useState('Loading...')
   const { id: documentId } = useParams()
 
   useEffect(() => {
-    const s = io('http://localhost:5000')
+    const userId = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('userId='))
+      ?.split('=')[1]
+
+    const baseURL = API.defaults.baseURL?.replace('/api/', '') || ''
+    const s = io(baseURL, {
+      query: { userId: userId },
+    })
     setSocket(s)
 
     return () => {
       s.disconnect()
     }
   }, [])
+
+  useEffect(() => {
+    if (!documentId) return
+    const fetchTitle = async () => {
+      try {
+        const res = await API.get(`/documents/${documentId}`)
+        setTitle(res.data.title)
+      } catch (err) {
+        console.error('Error fetching title:', err)
+      }
+    }
+
+    fetchTitle()
+  }, [documentId])
 
   useEffect(() => {
     if (quill == null || socket == null) return
@@ -85,6 +109,16 @@ function TextEditor() {
     }
   }, [socket, quill])
 
+  const handleTitleChange = async (e) => {
+    const newTitle = e.target.value
+    setTitle(newTitle)
+    try {
+      await API.patch(`/documents/${documentId}`, { title: newTitle })
+    } catch (err) {
+      console.error('Failed to update title:', err)
+    }
+  }
+
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return
 
@@ -102,7 +136,17 @@ function TextEditor() {
     setQuill(q)
   }, [])
 
-  return <div className="container" ref={wrapperRef}></div>
+  return (
+    <div>
+      <input
+        className="w-full px-4 font-bold "
+        value={title}
+        onChange={handleTitleChange}
+        placeholder="Untitled Document"
+      />
+      <div className="container mt-4" ref={wrapperRef}></div>
+    </div>
+  )
 }
 
 export default TextEditor

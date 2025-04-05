@@ -9,7 +9,7 @@ function middleware(req) {
   if (accessToken !== undefined) loggedIn = true
 
   // Redirect to login if the user is not logged in and trying to access a protected route
-  if (pathname.startsWith('/protected') && !loggedIn) {
+  if (pathname.startsWith('/document') && !loggedIn) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 

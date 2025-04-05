@@ -9,29 +9,36 @@ import Link from 'next/link'
 function HomePage() {
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
+  const [userName, setUserName] = useState('')
+  const [isMounted, setIsMounted] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    const fetchDocuments = async () => {
-      const storedUserId = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('userId='))
-        ?.split('=')[1]
+    setIsMounted(true)
+
+    const storedUserId = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('userId='))
+      ?.split('=')[1]
+
+    const fetchUserAndDocuments = async () => {
       try {
-        const res = await API.get(`/documents/getAll/${storedUserId}`)
-        const data = res.data
-        setDocuments(data)
+        const userRes = await API.get(`/users/user/${storedUserId}`)
+        setUserName(userRes.data.name)
+
+        const docsRes = await API.get(`/documents/getAll/${storedUserId}`)
+        setDocuments(docsRes.data)
       } catch (error) {
-        console.error('Error fetching documents:', error)
+        console.error('Error fetching user/documents:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchDocuments()
+    if (storedUserId) {
+      fetchUserAndDocuments()
+    }
   }, [])
-
-  console.log('Documents:', documents)
 
   const handleCreateNewDocument = () => {
     const newUuid = uuidv4()
@@ -45,14 +52,12 @@ function HomePage() {
     router.push('/login')
   }
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
+  if (!isMounted || loading) return <div>Loading...</div>
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Your Documents</h1>
+        <h1 className="text-2xl font-bold">Welcome {userName}</h1>
         <div className="flex gap-2">
           <button
             onClick={handleCreateNewDocument}
