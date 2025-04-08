@@ -1,0 +1,25 @@
+# Ignore node_modules (you'll install them inside Docker)
+node_modules
+npm-debug.log
+
+# Local environment and config files
+.env
+.env.local
+.env.*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git
+.gitignore
+
+# Editor files
+.vscode
+.idea
+
+# Build output (for frontend)
+.next
+out
+dist

@@ -78,7 +78,7 @@ function HomePage() {
       ) : (
         <ul className="space-y-2">
           {documents.map((doc) => (
-            <li key={doc._id} className="border-b pb-2">
+            <li key={doc._id} className="border-b pb-2 flex justify-between">
               <Link
                 href={`/document/${doc._id}`}
                 target="_blank"
@@ -87,6 +87,9 @@ function HomePage() {
               >
                 {doc.title}
               </Link>
+              <div className="py-0.5 px-2 rounded-lg bg-red-500 hover:bg-red-800 text-white cursor-pointer">
+                Delete
+              </div>
             </li>
           ))}
         </ul>
