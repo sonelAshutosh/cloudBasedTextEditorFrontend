@@ -13,6 +13,8 @@ function HomePage() {
   const [isMounted, setIsMounted] = useState(false)
   const router = useRouter()
 
+  console.log('API', process.env.NEXT_PUBLIC_BACKEND_URL)
+
   useEffect(() => {
     setIsMounted(true)
 
